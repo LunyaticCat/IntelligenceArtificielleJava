@@ -8,25 +8,26 @@ import java.util.Random;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
+/**solver for the pb of the n-queens.. on a n x n chessboard, n queens are placed.
+ * a queen cannot be able to see another one on its row, column, or its diagonals .
+ * The algorithm used place randomly the queens, then ask to the queens that are the most in conflict to move until a solution is found..
+ * */
 public class RandomQueens
 {
    /**
-    * columns of the queens distributed by row : queen 0 is on the row 0, column
-    * queens[0]
+    * columns of the queens that are sorted by row : queen#0 is 
+    * on the row 0, and on the column queens[0]
     */
    int[] queens;
-   /** nb of conflicts by queens */
+   /** nb of conflicts for each queen */
    int[] conflicts;
-   /** queen that has recently moved */
+   /** queen that has moved previously */
    int movedQueen;
    /** nb of queens */
    int nb;
-   /** queens with conflicts */
-   ArrayList<Integer> conflictsQueens;
-   /**
-    * verbose level: 0=only the placement of the queens, 1 = show moves, 2 = show
-    * grid
-    */
+   /** queens with maximal conflicts */
+   List<Integer> conflictsQueens;
+   /** verbose level: 0=only the placement of the queens, 1 = show moves, 2 = show grid */
    int verboseLevel = 2;
    /** randomizer used to setup the initial grid and to pickup a queens */
    Random rand;
@@ -39,6 +40,7 @@ public class RandomQueens
    Runtime runtime;
 
 
+   /**initialize the arrays*/
    RandomQueens(int _nb) {
       nb = _nb;
       queens = new int[nb];
@@ -76,8 +78,8 @@ public class RandomQueens
       }
    }
 
-   /** return a list of queens having the maximal conflicts */
-   ArrayList<Integer> maxConflictIndices()
+   /** compute the list of queens having the maximal conflicts */
+   void maxConflictIndices()
    {
       conflictsQueens.clear();
       int max = max(conflicts);
@@ -88,53 +90,59 @@ public class RandomQueens
             conflictsQueens.add(i);
          }
       }
-//      Collections.shuffle(conflictsQueens);
-
-      return conflictsQueens;
    }
 
+   /**@return the max of a tab*/
    int max(int[] tab)
    {
       int max = tab[0];
       for(int v:tab) if(v>max)max=v;
       return max;
-//      OptionalInt max = IntStream.of(tab).max();
-//      return max.getAsInt();
    }
 
    /** move the queen with max conflicts to reduce the nb of conflicts */
    void resolveOneConflict()
    {
-      List<Integer> liste = maxConflictIndices();
-      int nbConflicts = liste.size();
+      //extract the queens with maximal conflicts
+      maxConflictIndices();
+      //choose a queen randomly
+      int nbConflicts = conflictsQueens.size();
       int noQueens = rand.nextInt(nbConflicts);
-      int queenWithMaxConflicts = liste.get(noQueens);
+      int queenWithMaxConflicts = conflictsQueens.get(noQueens);
+      //if it is the same hat has previously moved, choose another one if possible
       if (queenWithMaxConflicts == movedQueen && nbConflicts > 1) 
-         queenWithMaxConflicts = liste.get((noQueens+1)%nbConflicts);
+         queenWithMaxConflicts = conflictsQueens.get((noQueens+1)%nbConflicts);
       movedQueen = queenWithMaxConflicts;
+      //found a better solution for this queen
       int best = searchConflictMinimum(queenWithMaxConflicts);
       if (verboseLevel > 0) System.out.println(
             "queens(" + queenWithMaxConflicts + ") moves from " + queens[queenWithMaxConflicts] + " to " + best);
       queens[queenWithMaxConflicts] = best;
    }
 
-   /** find a column where the queen will have the minimum of conflicts */
+   /** find a column where the queen will have the minimum of conflicts
+    * @param queen no of the queen that have to move
+    * @return a better column for the queen */
    int searchConflictMinimum(int queen)
    {
       int min = Integer.MAX_VALUE;
       int colQ = queens[queen];
       int minC = 0;
       int nbConflicts = 0;
+      // try all the column
       for (int col = 0; col < nb; col++)
       {
          if (col == colQ) continue;
          nbConflicts = 0;
+         // compute the eventual conflicts if the column i is chosen 
          for (int j = 0; j < nb; j++)
          {
             if (col != j && (col == queens[j] || (col - queen) == (queens[j] - j) || (col + queen) == (queens[j] + j)))
                nbConflicts++;
          }
-         if ((min > nbConflicts) || (min == nbConflicts && rand.nextBoolean()))
+         // if a better place is found, take it
+         // or if it is a place with the same nb on conflicts, choose it, or no....
+         if ((nbConflicts < min) || (min == nbConflicts && rand.nextBoolean()))
          {
             min = nbConflicts;
             minC = col;
@@ -151,26 +159,31 @@ public class RandomQueens
    {
       computeConflicts();
       int sum = sumConflicts();
-      int i = 0;
+      int nbMoves = 0;
       long timeA = System.currentTimeMillis();
-      while (sum > 0 && i < nb * nb)
+      // the algorithm can be stuck in a local minima, so the algo run
+      // until the sum on conflicts is null, or until a nb of loops (nb x nb here)
+      while (sum > 0 && nbMoves < nb * nb)
       {
          resolveOneConflict();
          computeConflicts();
-
          sum = sumConflicts();
+         // a little cheat : to encourage other queen to move, 
+         // we decrease artificially the nb on conflicts for the queen that have just moved 
          if (movedQueen != -1) conflicts[movedQueen]--;
-         i++;
+         nbMoves++;
       }
+      // some lines to compute the time spent, the memory used, 
       long timeB = System.currentTimeMillis();
       System.out.println("solution found in " + (timeB - timeA) + " ms for " + nb + " queens..");
       long memory = (runtime.totalMemory() - runtime.freeMemory())/1024L;
       mem.add(memory);
       System.out.println("memory used = " + memory + "ko");
       times.add((int) (timeB - timeA));
+      // just before the print, we reallocate the nb of conflict artificially decreased
       if (movedQueen >= 0) conflicts[movedQueen]++;
-      System.out.println("nb of conflicts=" + sumConflicts() + ",  nb of moves= " + i);
-      moves.add(i);
+      System.out.println("nb of conflicts=" + sumConflicts() + ",  nb of moves= " + nbMoves);
+      moves.add(nbMoves);
       System.out.println("here is the solution : ");
       System.out.println(this);
    }
@@ -189,9 +202,9 @@ public class RandomQueens
       StringBuilder sb = new StringBuilder();
       if (verboseLevel > 1)
       {
-         for (int i = 0; i < nb; i++)
+         for (int i = 0; i < nb; i++) 
          {
-            for (int j = 0; j < nb; j++)
+            for (int j = 0; j < nb; j++) 
             {
                if (queens[i] == j)
                   sb.append("X");
@@ -211,19 +224,11 @@ public class RandomQueens
       return sb.toString();
    }
 
-   /** return the array conflicts as a string */
-   String conflictsToString()
-   {
-      StringBuilder sb = new StringBuilder();
-      sb.append("conflicts: ");
-      for (int i = 0; i < nb; i++)
-         sb.append(conflicts[i]).append(",");
-      return sb.toString();
-   }
 
+   /**launch nb resolutions and measure the performances*/
    public static void main(String[] args)
    {
-      int nb = 8;
+      int nb = 1000;
       RandomQueens rq = new RandomQueens(nb);
       rq.verboseLevel = 0;
       int nbTests = 5;
@@ -242,9 +247,9 @@ public class RandomQueens
       IntStream isMoves = rq.moves.stream().mapToInt(Integer::intValue);
       LongStream isMem = rq.mem.stream().mapToLong(Long::longValue);
       System.out.println("pour " + nb + " reines, sur " + nbTests + " tests,");
-      System.out.println("----  le tps moyen de résolution est " + isTime.average().getAsDouble() + "ms");
-      System.out.println("--------  le tps max de résolution est " + Collections.max(rq.times) + "ms");
-      System.out.println("--------  le tps min de résolution est " + Collections.min(rq.times) + "ms");
+      System.out.println("----  le tps moyen de résolution est " + isTime.average().getAsDouble() + " ms");
+      System.out.println("--------  le tps max de résolution est " + Collections.max(rq.times) + " ms");
+      System.out.println("--------  le tps min de résolution est " + Collections.min(rq.times) + " ms");
       System.out.println("----  le nb moyen de déplacements est " + isMoves.average().getAsDouble());
       System.out.println("--------  le nb max de déplacements est de " + Collections.max(rq.moves));
       System.out.println("--------  le nb min de déplacements est de " + Collections.min(rq.moves));
