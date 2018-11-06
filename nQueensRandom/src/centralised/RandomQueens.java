@@ -201,11 +201,11 @@ public class RandomQueens
             sb.append("\n");
          }
       }
-      sb.append("queens: ");
+      sb.append("rows of queen#0 -- queen#").append(nb-1).append(": ");
       for (int i = 0; i < nb; i++)
          sb.append(queens[i]).append(",");
       sb.append("\n");
-      sb.append("conflicts: ");
+      sb.append("conflicts of queen#0 -- queen#").append(nb-1).append(": ");
       for (int i = 0; i < nb; i++)
          sb.append(conflicts[i]).append(",");
       return sb.toString();
@@ -223,7 +223,7 @@ public class RandomQueens
 
    public static void main(String[] args)
    {
-      int nb = 1000;
+      int nb = 8;
       RandomQueens rq = new RandomQueens(nb);
       rq.verboseLevel = 0;
       int nbTests = 5;
