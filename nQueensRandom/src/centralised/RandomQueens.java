@@ -69,11 +69,7 @@ public class RandomQueens
          int col = queens[i];
          for (int j = i + 1; j < nb; j++)
          {
-            if (col == queens[j] || (col - i) == (queens[j] - j) || (col + i) == (queens[j] + j))
-            {
-               conflicts[i]++;
-               conflicts[j]++;
-            }
+//TODO: calculer les conflits pour les reines i & j
          }
       }
    }
@@ -137,8 +133,8 @@ public class RandomQueens
          // compute the eventual conflicts if the column i is chosen 
          for (int j = 0; j < nb; j++)
          {
-            if (col != j && (col == queens[j] || (col - queen) == (queens[j] - j) || (col + queen) == (queens[j] + j)))
-               nbConflicts++;
+//TODO:calculer le nb de conflits entre la reine queen et la reine j
+            //if.... -> nbConflicts++;
          }
          // if a better place is found, take it
          // or if it is a place with the same nb on conflicts, choose it, or no....
