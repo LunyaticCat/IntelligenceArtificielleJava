@@ -188,6 +188,9 @@ public class MCTSNodeTTT {
         return leaf;
     }
 
+    public int getAction(){return action;}
+    public int getNbActions(){return nbActions;}
+
 
     public String toString()
     {
