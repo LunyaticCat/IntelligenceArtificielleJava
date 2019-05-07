@@ -63,9 +63,21 @@ public class MCTSNodeTTT {
         }
         //arrivé à un noeud feuille.. creer ses fils directs
         double value=0;
+        //si le noeud feuille trouve est terminal et deja visite, recuperer sa valeur
         if (node.terminal) value = node.sommeGains;
-        if(node.nbActions>0 && !node.terminal)
-        {
+        else if(node.nbActions==0)
+        {        //si le noeud feuille trouve est terminal et non deja visite, calculer sa valeur
+            node.terminal = true;
+            if(node.isWinner(1)) node.sommeGains = 1;
+            else if(node.isWinner(2)) node.sommeGains = 0;
+            else
+            {
+                if(node.nbActions==0) node.sommeGains = 0.5;
+            }
+            value = node.sommeGains;
+        }
+        else
+        {   //si c'est un noeud feuille non terminal.. creer ses fils directs
             node.expand();
             //choisir un noeud
             var newNode = node.select();
