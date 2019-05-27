@@ -1,4 +1,4 @@
-#Jeu du Carre en Java FX
+# Jeu du Carre en Java FX
 
 Vous trouverez 2 applications Java FX : 
 - CarreApp.java pour 2 joueurs
