@@ -11,5 +11,5 @@ La "mini IA" joue selon les règles suivantes :
 
 Le but étant d'étendre l'IA par utilisation d'algo alpha-beta ou de MCTS..
 
-Pour lancer les applications sous IntelliJ, voir [ici](https://stackoverflow.com/questions/52467561/intellij-cant-recognize-javafx-11-with-openjdk-11)
+Pour lancer les applications JavaFX avec Java 11 sous IntelliJ, voir [ici](https://stackoverflow.com/questions/52467561/intellij-cant-recognize-javafx-11-with-openjdk-11)
 
