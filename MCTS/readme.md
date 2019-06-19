@@ -1,6 +1,7 @@
-- MCTS : MonteCarlo Tree Search
+# MCTS : MonteCarlo Tree Search
 
 Cet espace présente 2 applications permettant à 1 joueur d'affronter une IA qui s'est entrainée à l'aide de l'algorithme MonteCarlo Tree Search.
+cf. [enoncé TP jeu](http://emmanuel.adam.free.fr/site/spip.php?article201)
 
 - TicTacToe est donc le jeu du morpion du du OXO.. L'IA par montecarlo n'a pas été optiisée, vous pouvez gagnée.
 
