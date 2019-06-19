@@ -6,3 +6,4 @@ Quelques algos en Java issus de l'Intelligence Artificielle
 
 - nQueensRandom est un exemple de résolution du problèmes des n-reines par placement aléatoire puis adaptation pour diminuer les conflits. temps de traitement : env. 1.5 secondes pour placer 1000 reines dans un echiquier de 1000x1000; 11ms pour placer 100 reines sur un echiquier de 100x100, et 0.6ms pour placer 8 reines.... https://fr.wikipedia.org/wiki/Problème_des_huit_dames
 
+- jeux/jeuDuCarre contient des classes java permettant à 2 joueurs de s'affronter sur le jeu du Carré.. Une mini IA basique permet également à 1 joueur de jouer contre elle..
