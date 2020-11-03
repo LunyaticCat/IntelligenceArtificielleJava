@@ -1,5 +1,3 @@
-# IntelligenceArtificielleJava
-
 Quelques algos en Java issus de l'Intelligence Artificielle
 
 ## Recherche aléatoire 
