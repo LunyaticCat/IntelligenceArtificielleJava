@@ -1,6 +1,7 @@
 # A Star : recherche informée
 
 L'algortihme A-Star est un algortihme de recherche de solution "informée", c'est-à-dire qu'il se base sur une heuristique pour guider sa recherche, au contraire des algorithmes de recherche aveugles(profondeur, largeur) qui eux n'exploitent pas les connaissances sur le problème à résoudre.
+
 La classe AlgoAStar contient l'algorithme A-Star.
 La classe State est un état générique à étendre. Un état possède les variables f,g,h, ainsi que des fonctions de comparaison, etc.
 
