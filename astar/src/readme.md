@@ -15,9 +15,9 @@ M N O _
 
 à partir de 
 <pre>
-_	A	C	D
-E	B	K	G
-N	F	J	H
-I	M	O	L
+_ A C D
+E B K G
+N F J H
+I M O L
 </pre>
 
