@@ -72,11 +72,11 @@ public class StateQueen extends State{
             leaf = chess[i]!=-1;
     }
 
-    /**check is the state a success (= a leaf without conflict)*/
-    public void checkState()
+    /**check and return is the state a success (= a leaf without conflict)*/
+    public boolean checkState()
     {
         success = ok && leaf;
-
+        return success;
     }
 
     /**compute the possible states for the next queen
@@ -112,8 +112,17 @@ public class StateQueen extends State{
 
     public String toString()
     {
-
-        return "I'm queen " + noQueen + ", col of the queens = " + Arrays.toString(chess) + ", leaf=" + leaf;
+        StringBuilder sbchess = new StringBuilder();
+        String newline = "\n";
+        for(int i=0; i<StateQueen.nb; i++)
+        {
+            byte[] line = new byte[StateQueen.nb];
+            Arrays.fill(line, (byte) '_');
+            int pos = chess[i];
+            if(pos!=-1) line[pos] = 'X';
+            sbchess.append(new String(line)).append(newline);
+        }
+        return "I'm queen " + noQueen + ", col of the queens = \n" + sbchess + ", leaf=" + leaf;
     }
 
 
@@ -127,7 +136,9 @@ public class StateQueen extends State{
         System.out.println("recherche du pb des " + StateQueen.nb + " reines, parcours en profondeur ");
         System.out.println("patientez env. 15 ms pour 10 reines.");
         long debut = System.currentTimeMillis();
-        DeepAndBreadthSearch.solve(new StateQueen(), false);
+        State solution = DeepAndBreadthSearch.solve(new StateQueen(), false);
+        if(solution!=null) System.out.println(solution);
+        else System.out.println("aucune solution trouvee");
         long fin = System.currentTimeMillis();
         System.out.println("temps passe en profondeur = " + (fin - debut) + " ms");
 
@@ -136,7 +147,9 @@ public class StateQueen extends State{
         System.out.println("recherche du pb des " + StateQueen.nb + " reines, parcours en largeur ");
         System.out.println("patientez env. 10 sec pour 10 reines.");
         debut = System.currentTimeMillis();
-        DeepAndBreadthSearch.solve(new StateQueen(), true);
+        solution = DeepAndBreadthSearch.solve(new StateQueen(), true);
+        if(solution!=null) System.out.println(solution);
+        else System.out.println("aucune solution trouvee");
         fin = System.currentTimeMillis();
         System.out.println("temps passe en largeur = " + (fin - debut) + " ms");
     }
