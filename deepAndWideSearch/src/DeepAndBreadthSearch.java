@@ -9,9 +9,11 @@ public class DeepAndBreadthSearch {
 
     /**generic algorithm
      * @param s0 the initial state
-     * @param breadth true for a breath search, false for a deep search*/
-    public static void solve(State s0,boolean breadth)
+     * @param breadth true for a breath search, false for a deep search
+     * @return a solution state, or null */
+    public static State solve(State s0, boolean breadth)
     {
+        State solution=null;
         var freeNodes = new LinkedList<State>();
         var closedNodes = new LinkedList<State>();
         freeNodes.add(s0);
@@ -24,20 +26,14 @@ public class DeepAndBreadthSearch {
             for (State s:nodes)
             {
                 if (!freeNodes.contains(s) && !closedNodes.contains(s)) {
+                    s.setParent(node);
                     success = success || s.isSuccess();
+                    if(success) solution = s;
                     if(breadth) freeNodes.addLast(s);
                     else freeNodes.addFirst(s);
                 }
             }
         }
-        if(success)
-        {
-            System.out.println("success !!");
-            freeNodes.forEach(s ->  {if (s.isSuccess()) System.out.println(s);});
-        }
-        else  System.out.println("Echec !!");
-        System.out.println("nb de noeuds libres : " + freeNodes.size());
-        System.out.println("nb de noeuds clos : " + closedNodes.size());
-
+        return solution;
     }
 }
