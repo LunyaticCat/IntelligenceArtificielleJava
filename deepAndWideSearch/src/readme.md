@@ -29,3 +29,16 @@ Exemple avec 10 reines :
 |_|_|_|_|_|_|X|_|_|_|
 |_|_|_|X|_|_|_|_|_|_|
 </pre>
+
+Vous remarquerez que si la solution existe, elle est toujours trouvée.
+Ceci s'appelle la **complétude**.<br>
+Cependant, cela peut prendre du temps... <br>
+Par exemple pour 10 reines, le temps de recherche est de 15ms pour une recherche en profondeur, 10 secondes pour une recherche en largeur. 
+Ceci s'explique que la solution ici se trouve en fin d'arbre, lorsque la dernière reine a été posée..<br>
+Mais si on teste 23 reines par exmple, même le parcour en profondeur est long, très long...
+
+Un autre type de recherche, par voisinage est beaucoup plus intéressant; voir la [recherche aléatoire](https://github.com/EmmanuelADAM/IntelligenceArtificielleJava).<br>
+Avec ce type de recherche, le placement de 1000 reines peut être réalisé en 1.5 ms !
+
+
+
