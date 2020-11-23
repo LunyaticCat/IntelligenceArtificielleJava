@@ -12,7 +12,21 @@ public abstract class State {
     boolean ok = true;
     /** state is a success or not*/
     boolean success = false;
+    /**parent of the state*/
+    State parent;
 
+    /** return the path from start node to this node*/
+    public LinkedList<State> rebuildPath()
+    {
+        var l = new LinkedList<State>();
+        State s = this;
+        while (s!=null)
+        {
+            l.addFirst(s);
+            s = s.getParent();
+        }
+        return l;
+    }
 
     /**check is the state is a leaf*/
     abstract void checkLeaf();
@@ -21,9 +35,11 @@ public abstract class State {
     public abstract LinkedList<State> nextStates();
 
     /**check is the state a success (= a leaf without conflict)*/
-    public abstract void checkState();
+    public abstract boolean checkState();
 
     public abstract boolean isSuccess();
     public abstract boolean isLeaf();
+    public State getParent() { return parent; }
+    public void setParent(State parent) { this.parent = parent; }
 
 }
