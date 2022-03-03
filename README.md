@@ -20,4 +20,5 @@ Quelques algos en Java issus de l'Intelligence Artificielle
 
 ## Jeux (alphabeta, minimax)
 
-- [jeux](https://github.com/EmmanuelADAM/IntelligenceArtificielleJava/tree/master/jeux)  contient des classes java permettant à 2 joueurs de s'affronter sur le jeu du Carré, et du Surakarta. A vous de définir une IA..
+- [MCTS](https://github.com/EmmanuelADAM/IntelligenceArtificielleJava/tree/master/MCTS) : contient un source permettant de jouer au TicTacToe (OCO, Morpion) contre une IA basée sur l'algorithme de MCTS (MonteCarlo Tree Search). Ce répertoire contiet aussi des classe à compléter pour programmer une IA jouant au jeu de 4 alignés (Puissance4)
+- [jeux](https://github.com/EmmanuelADAM/IntelligenceArtificielleJava/tree/master/jeux) : contient des classes java permettant à 2 joueurs de s'affronter sur le jeu du Carré, et du Surakarta. A vous de définir une IA..
