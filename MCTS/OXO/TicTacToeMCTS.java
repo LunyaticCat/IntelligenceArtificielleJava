@@ -8,7 +8,7 @@ import java.util.Scanner;
  * */
 public class TicTacToeMCTS {
     /**nb de jeux a jouer au debut et entre chaque coups de la personne*/
-    static int nbGames = 1000;
+    static int nbGames = 500;
     public static void main(String[] args) {
         var startNode = new MCTSNodeTTT();
 
@@ -16,7 +16,7 @@ public class TicTacToeMCTS {
         for (int i=0; i<nbGames; i++) {
             startNode.selectAction();
         }
-        System.out.println(nbGames + " parties jouées en " + (System.currentTimeMillis() - starTime) + " ms");
+        System.out.println(nbGames + " parties jouees en " + (System.currentTimeMillis() - starTime) + " ms");
         System.out.println(startNode);
         System.out.println("Je commence..");
         System.out.println("----------");
@@ -61,9 +61,13 @@ public class TicTacToeMCTS {
                 mynode = yournode;
                 System.out.println(mynode);
                 System.out.println("-".repeat(30));
-                //on rejoue quelques partie a partir du noeud courant
-                for (int i=0; i<nbGames; i++) {
-                    mynode.selectAction();
+                if(!fin) {
+                    //on rejoue quelques partie a partir du noeud courant
+                    starTime = System.currentTimeMillis();
+                    for (int i = 0; i < nbGames; i++) {
+                        mynode.selectAction();
+                    }
+                    System.out.println(" a partir de ce point, je me suis joue en tete " + nbGames + " parties en " + (System.currentTimeMillis() - starTime) + " ms");
                 }
             }
         }

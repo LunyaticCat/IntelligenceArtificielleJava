@@ -24,15 +24,15 @@ public class MCTSNodeTTT {
     /**
      * valeur d'une feuille si gain de match
      */
-    private static final int GAIN = 2;
+    private static final int GAIN = 1;
     /**
      * valeur d'une feuille si match nul
      */
-    private static final int NUL = 1;
+    private static final int NUL = 0;
     /**
      * valeur d'une feuille si perte de match
      */
-    private static final int PERTE = 0;
+    private static final int PERTE = -1;
     /**
      * valeur du pion IA dans la grille
      */
@@ -234,8 +234,8 @@ public class MCTSNodeTTT {
         }
         //si c'est un noeud terminal; c'est une feuille et on incremente le nb de visite
         //(sinon ce sera fait par un descendant)
-        if (terminal) {leaf = true; nbVisites++;}
         valeur = val;
+        if (terminal) {leaf = true; nbVisites++;sommeGains = valeur;}
         return val;
     }
 
@@ -250,18 +250,18 @@ public class MCTSNodeTTT {
             tn.expand();
             int i = 0;
             //si l'ia joue, on verifie si dans les fils direct il y a un gagnant pour l'IA
-            if(tn.ia) {
-                var children = tn.children;
-                while (i < children.length && child == null) {
-                    if (children[i].terminal && children[i].ia && children[i].valeur == MCTSNodeTTT.valeurIA)
-                        child = children[i];
-                    i++;
+            var children = tn.children;
+            while (i < children.length && child == null) {
+                if (children[i].terminal) {
+                    if (tn.ia && children[i].valeur == MCTSNodeTTT.valeurIA) child = children[i];
+                    if (!tn.ia && children[i].valeur == MCTSNodeTTT.valeurPersonne) child = children[i];
                 }
+                i++;
             }
             //sinon on en prend un au hasard
             if (child == null) child = tn.children[r.nextInt(tn.arity())];
-            //s'il n'est pas terminal, on poursuit le jeu avec ce noeud
-            if (!child.terminal) rollOut(child);
+            // on poursuit le jeu avec ce noeud
+            rollOut(child);
         }
         else tn.parent.updateValue(tn.valeur);
         //sinon, on repercute sa valeur le long de son ascendance
