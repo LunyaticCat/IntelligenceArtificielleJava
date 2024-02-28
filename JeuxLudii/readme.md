@@ -21,13 +21,14 @@ De là, plusieurs implémentations sont possibles :
        - $UCB(s, a) = Q(s, a) + E(s, a)$ où :
          - $Q(s, a)$ est la qualité, la récompense moyenne pour le coup $a$ dans l'état $s$ (nb gains/ nb visites).
          - $E(s, a)$ est un coefficient d'exploration, en général basé sur le nombre de fois que le coup $a$ a été joué à partir de $s$
-   - **UCT (Upper Confidence bounds applied to Trees)**:
-   - Explorer l'arbre en sélectionnant les mouvements qui ont la confiance (valeur bornée par une limite supérieure) la plus élevée. 
-   - La limite supérieure de confiance pour un coup $a$ à partir d'un état $s$ est calculée à l'aide de la formule suivante : 
-     - $UCT(s,a) = Q(s, a) + C \times \sqrt{N(s, a) / N(s)}$ où : 
-       - $Q(s, a)$ est la qualité, la récompense moyenne pour le coup $a$ dans l'état $s$ (nb gains/ nb visites). 
-       - $N(s, a)$ est le nombre de fois que le coup $a$ a été joué dans l'état $s$. 
-       - $C$ est une constante qui contrôle l'équilibre entre l'exploration et l'exploitation.
+ - **UCT (Upper Confidence bounds applied to Trees)**:
+ - Explorer l'arbre en sélectionnant les mouvements qui ont la confiance (valeur bornée par une limite supérieure) la plus élevée. 
+ - La limite supérieure de confiance pour un coup $a$ à partir d'un état $s$ est calculée à l'aide de la formule suivante : 
+   - $UCT(s,a) = Q(s, a) + C \times \sqrt{(2.log(max(1,N(s))) / N(s,a)}$ où : 
+     - $Q(s, a)$ est la qualité, la récompense moyenne pour le coup $a$ dans l'état $s$ (nb gains/ nb visites). 
+     - $N(s)$ est le nombre de passages par l'état $s$.
+     - $N(s, a)$ est le nombre de fois que le coup $a$ a été joué dans l'état $s$.
+     - $C$ est une constante qui contrôle l'équilibre entre l'exploration et l'exploitation.
  
 UCT est en quelque sorte une implémentation particulière de UCB.
 
