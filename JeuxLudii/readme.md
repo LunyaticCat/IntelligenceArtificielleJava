@@ -24,7 +24,7 @@ De là, plusieurs implémentations sont possibles :
    - **UCT (Upper Confidence bounds applied to Trees)**:
    - Explorer l'arbre en sélectionnant les mouvements qui ont la confiance (valeur bornée par une limite supérieure) la plus élevée. 
    - La limite supérieure de confiance pour un coup $a$ à partir d'un état $s$ est calculée à l'aide de la formule suivante : 
-     - $UCT(s,a) = Q(s, a) + C x \sqrt(N(s, a)) / N(s)$ où : 
+     - $UCT(s,a) = Q(s, a) + C \times \sqrt{N(s, a) / N(s)}$ où : 
        - $Q(s, a)$ est la qualité, la récompense moyenne pour le coup $a$ dans l'état $s$ (nb gains/ nb visites). 
        - $N(s, a)$ est le nombre de fois que le coup $a$ a été joué dans l'état $s$. 
        - $C$ est une constante qui contrôle l'équilibre entre l'exploration et l'exploitation.
