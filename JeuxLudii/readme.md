@@ -24,7 +24,7 @@ De là, plusieurs implémentations sont possibles :
  - **UCT (Upper Confidence bounds applied to Trees)**:
  - Explorer l'arbre en sélectionnant les mouvements qui ont la confiance (valeur bornée par une limite supérieure) la plus élevée. 
  - La limite supérieure de confiance pour un coup $a$ à partir d'un état $s$ est calculée à l'aide de la formule suivante : 
-   - $UCT(s,a) = Q(s, a) + C \times \sqrt{\frac{2.log(max(1, N(s)))}{N(s,a)}}$ où : 
+   - $UCT(s,a) = Q(s, a) + C \times \sqrt{\frac{log(max(1, N(s)))}{N(s,a)}}$ où : 
      - $Q(s, a)$ est la qualité, la récompense moyenne pour le coup $a$ dans l'état $s$ (nb gains/ nb visites). 
      - $N(s)$ est le nombre de passages par l'état $s$.
      - $N(s, a)$ est le nombre de fois que le coup $a$ a été joué dans l'état $s$.
@@ -58,5 +58,10 @@ Travail à réaliser.
           - les cases sont numérotées de 0 à 63. 
           - il suffit d'avoir un tableau d'entiers indiquant les valeurs des cases (500 pour les coins (0, 7, 56, 63) par exemple, -150 pour ... etc.)
 
-- Développez une IA de type PUP, et appliquée là à un jeu à large choix comme HexAmazons
+- Développez une IA de type PUP, et appliquée là à un jeu à large choix comme HexAmazons. 
+  - Pour cela il vous faut modifier l'algo UCT 
+    - dans `Node select(final Node current)`
+      - on écrit `while (!current.unexpandedMoves.isEmpty())`plutôt que `if`
+      - on ne sort pas de cette boucle par return
+      - on efface les noeuds fils non choisis, tant que le noeud père n'a pas été visité n fois (n>=5 par exemple)
 
