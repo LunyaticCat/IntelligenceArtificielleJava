@@ -46,9 +46,17 @@ Vous pouvez les adapter pour créer le vôtre ; le choix de l'algorithme dépend
 --
 Travail à réaliser.
 
-- Développez une IA de type Progressive BIAS, adaptée jeu Reversi.
+- Développez une IA de type Progressive BIAS, adaptée au jeu Reversi.
   - Donc pour la valeur des cases occupées a un impact dans le choix d'un noeud (dans coef d'exploration)
     (appelez là ProgBiasVotreNom)
+    - petit guide, en se basant sur UCT Soemers, on remplace le coefficient d'exploration par une valeur basée sur la position des pièces.
+      - `final double explore = Math.sqrt(twoParentLog / child.visitCount);` devient <br>
+      `final double explore = getExplorationPreference(child);` où
+        - `double getExplorationPreference(final Node node)` est une fonction à définir
+          - `var states = node.context.state().containerStates()[0];` permet d'obtenir la liste des cases du jeu et leurs contenu
+          - `states.stateCell(i)` retourne la valeur du pion (0 = pas de pion, 1 = pions joueur 1, 2 = pions joueur 2 )
+          - les cases sont numérotées de 0 à 63. 
+          - il suffit d'avoir un tableau d'entiers indiquant les valeurs des cases (500 pour les coins (0, 7, 56, 63) par exemple, -150 pour ... etc.)
 
 - Développez une IA de type PUP, et appliquée là à un jeu à large choix comme HexAmazons
 
