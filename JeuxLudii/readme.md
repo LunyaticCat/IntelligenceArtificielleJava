@@ -49,7 +49,7 @@ Vous pouvez les adapter pour créer le vôtre ; le choix de l'algorithme dépend
 Ce développement est réalisé à l'aide de l'application [Ludii](https://ludii.games/).
   - Télécharger l'application Ludii : [ludii.games/download.php](https://ludii.games/download.php)
     - Vous pouvez également télécharger les sources pour joindre la documentation. 
-  - reprenez les codes exitant dans cette page et incluez les dans uin nouveau projet
+  - reprenez les codes existant dans cette page et incluez-les dans un nouveau projet
   - ajoutez la librairie ludiixxxx.jar que vous avez téléchargée à votre projet.
 
 Parmi les codes de cette page : 
@@ -64,13 +64,13 @@ Parmi les codes de cette page :
 
 **Il y a deux IA à développer :**
 - Développez une _IA de type Progressive BIAS_, adaptée au jeu Reversi.
-  - Donc pour la valeur des cases occupées a un impact dans le choix d'un noeud (dans coef d'exploration)
+  - Donc la valeur des cases occupées a un impact dans le choix d'un nœud (dans coef d'exploration)
     (appelez là ProgBiasVotreNom)
-    - petit guide, en se basant sur UCT Soemers, on remplace le coefficient d'exploration par une valeur basée sur la position des pièces.
+    - petit guide, en se basant sur UCTSoemers, on remplace le coefficient d'exploration par une valeur basée sur la position des pièces.
       - `final double explore = Math.sqrt(twoParentLog / child.visitCount);` devient <br>
       `final double explore = getExplorationPreference(child);` où
         - `double getExplorationPreference(final Node node)` est une fonction à définir
-          - `var states = node.context.state().containerStates()[0];` permet d'obtenir la liste des cases du jeu et leurs contenu
+          - `var states = node.context.state().containerStates()[0];` permet d'obtenir la liste des cases du jeu et leurs contenus
           - `states.stateCell(i)` retourne la valeur du pion (0 = pas de pion, 1 = pions joueur 1, 2 = pions joueur 2 )
           - les cases sont numérotées de 0 à 63. 
           - il suffit d'avoir un tableau d'entiers indiquant les valeurs des cases (500 pour les coins (0, 7, 56, 63) par exemple, -150 pour ... etc.)
