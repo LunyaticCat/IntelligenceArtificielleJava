@@ -1,14 +1,16 @@
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
 import game.Game;
+import game.equipment.container.Container;
 import main.collections.FastArrayList;
 import other.AI;
 import other.RankUtils;
 import other.context.Context;
 import other.move.Move;
+import other.state.container.ContainerState;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A simple example implementation of a standard UCT approach.
@@ -17,9 +19,10 @@ import other.move.Move;
  *
  * @author Dennis Soemers
  */
-public class UCTSoemers extends AI
+public class UCTRevEA extends AI
 {
 
+    static final int[] coeff = new int[]{500, -150, 30, 10, 10, 30, -150, 500, -150, -250, 0, 0, 0, 0, -250, -150, 30, 0, 1, 2, 2, 1, 0, 30, 10, 0, 2, 16, 16, 2, 0, 10, 10, 0, 2, 16, 16, 2, 0, 10, 30, 0, 1, 2, 2, 1, 0, 30, -150, -250, 0, 0, 0, 0, -250, -150, 500, -150, 30, 10, 10, 30, -150, 500};
     //-------------------------------------------------------------------------
 
     /** Our player index */
@@ -30,24 +33,14 @@ public class UCTSoemers extends AI
     /**
      * Constructor
      */
-    public UCTSoemers()
+    public UCTRevEA()
     {
-        this.friendlyName = "UCTSoemers";
+        this.friendlyName = "UCTRevEA";
     }
 
     //-------------------------------------------------------------------------
 
     @Override
-    /**for a giving game, in a specific context (state), select an action using the UCT (Upper Confidence bounds applied to Trees) algorithm
-     * within a given time limit.
-     * The reflexion can use a maximum of iterations and maximum depth.
-     *
-     * @param game the game being played
-     * @param context the current context (state) of the game
-     * @param maxSeconds the maximum allowable time for selecting an action
-     * @param maxIterations the maximum number of iterations allowed for selecting an action
-     * @param maxDepth the maximum depth of the MCTS tree to build
-     * @return the best move to be made     * */
     public Move selectAction
             (
                     final Game game,
@@ -58,11 +51,35 @@ public class UCTSoemers extends AI
             )
     {
         // Start out by creating a new root node (no tree reuse in this example)
-        // it means that we do not seek if the node has already be explored
         final Node root = new Node(null, null, context);
+        // pieces of the board and their positions
+/*        var pieces = context.state().owned();
+        var  playerPieces = pieces.positions(player);
+        System.out.println(Arrays.toString(playerPieces));
 
-        // We'll respect any limitations on max seconds and max iterations (d
-        // if they are not set (-1), we use the maximum possible
+        var ct = root.context.components();
+        System.out.println("sites = " + Arrays.toString(ct));
+        int pl = player;
+        System.out.printf("position du joueur %d = %s\n", pl, root.context.state().owned().sites(pl));
+        pl = 1;
+        System.out.printf("position du joueur %d = %s\n", pl, root.context.state().owned().sites(pl));
+        pl = 2;
+        System.out.printf("position du joueur %d = %s\n", pl, root.context.state().owned().sites(pl));
+        var states = root.context.state().containerStates();
+        var state = states[0];
+        for(int i=0; i<64; i++){
+            System.out.printf("(%d, %d)\t",i, state.stateCell(i));
+            if ((i+1)%8==0)System.out.println();
+        }
+
+        int i=0;
+        for (ContainerState state : states) {
+            System.out.println(state.toString());
+            System.out.println(i++ + ", "+ state.stateCell(20));
+        }*/
+//      System.out.println("game.board().numSites() = " +game.board().numSites());
+
+        // We'll respect any limitations on max seconds and max iterations (don't care about max depth)
         final long stopTime = (maxSeconds > 0.0) ? System.currentTimeMillis() + (long) (maxSeconds * 1000L) : Long.MAX_VALUE;
         final int maxIts = (maxIterations >= 0) ? maxIterations : Integer.MAX_VALUE;
 
@@ -82,32 +99,27 @@ public class UCTSoemers extends AI
             // Traverse tree
             while (true)
             {
-                //trial = a state of the game. over() is true if we've reached a terminal state
-                if (current.context.trial().over()) break;
+                if (current.context.trial().over())
+                {
+                    // We've reached a terminal state
+                    break;
+                }
 
-                // from the current node, we select a children by the UCT algorithm (mix of Quality and Exploration)
                 current = select(current);
 
-                // We've found a new node never expanded, time for playout!
-                if (current.visitCount == 0) break;
+                if (current.visitCount == 0)
+                {
+                    // We've expanded a new node, time for playout!
+                    break;
+                }
             }
 
             Context contextEnd = current.context;
 
-            // if the state is not terminal, Run a playout
             if (!contextEnd.trial().over())
             {
+                // Run a playout if we don't already have a terminal game state in node
                 contextEnd = new Context(contextEnd);
-                /* general a full playout (until a terminal state is reached)
-                     * @param context the current context (state) of the game
-                     * @param ais the list of AI players involved in the playout
-                     * @param thinkingTime the maximum time allowed for thinking during the playout
-                     * @param playoutMoveSelector the move selector for biased actions during the playout
-                     * @param maxNumBiasedActions the maximum number of biased actions allowed during the playout
-                     * @param maxNumPlayoutActions the maximum number of actions allowed during the playout
-                     * @param random the random number generator to be used during the playout
-                    * @return the trial resulting from the playout
-                    */
                 game.playout
                         (
                                 contextEnd,
@@ -120,7 +132,7 @@ public class UCTSoemers extends AI
                         );
             }
 
-            // we are in a final state, this computes utilities for all players at the of the playout,
+            // This computes utilities for all players at the of the playout,
             // which will all be values in [-1.0, 1.0]
             final double[] utilities = RankUtils.utilities(contextEnd);
 
@@ -145,29 +157,32 @@ public class UCTSoemers extends AI
 
     /**
      * Selects child of the given "current" node according to UCB1 equation.
-     * N.B. This method also implements the "Expansion" phase of MCTS, and creates
+     * This method also implements the "Expansion" phase of MCTS, and creates
      * a new node if the given current node has unexpanded moves.
      *
-     * @param current current node
+     * @param current
      * @return Selected node (if it has 0 visits, it will be a newly-expanded node).
      */
     public static Node select(final Node current)
     {
-        // if there exist at least one child of this one that has not  been visited, choose one randomly
         if (!current.unexpandedMoves.isEmpty())
         {
             // randomly select an unexpanded move
             final Move move = current.unexpandedMoves.remove(
                     ThreadLocalRandom.current().nextInt(current.unexpandedMoves.size()));
+
             // create a copy of context
             final Context context = new Context(current.context);
+            var r = context.region();
+
             // apply the move
             context.game().apply(context, move);
+
             // create new node and return it
             return new Node(current, move, context);
         }
 
-        // if nont, use UCB1 equation to select from all children, with random tie-breaking
+        // use UCB1 equation to select from all children, with random tie-breaking
         Node bestChild = null;
         double bestValue = Double.NEGATIVE_INFINITY;
         final double twoParentLog = 2.0 * Math.log(Math.max(1, current.visitCount));
@@ -180,30 +195,44 @@ public class UCTSoemers extends AI
         {
             final Node child = current.children.get(i);
             final double exploit = child.scoreSums[mover] / child.visitCount;
-            final double explore = Math.sqrt(twoParentLog / child.visitCount);
+
+            final double explore = getExplorationPreference(child); //Math.sqrt(twoParentLog / child.visitCount);
 
             final double ucb1Value = exploit + explore;
 
-            // if we have a new winner
             if (ucb1Value > bestValue)
             {
                 bestValue = ucb1Value;
                 bestChild = child;
                 numBestFound = 1;
             }
-            else if //we have an ex-aequo, we decide with random tie-breaking
+            else if
             (
                     ucb1Value == bestValue &&
                             ThreadLocalRandom.current().nextInt() % ++numBestFound == 0
-                    //N.B. the random selection can be simplified
             )
             {
+                // this case implements random tie-breaking
                 bestChild = child;
             }
         }
 
         return bestChild;
     }
+
+    static double getExplorationPreference(final Node node){
+        int player = node.context.player();
+        player = 1;
+        var states = node.context.state().containerStates()[0];
+        int sum = 0;
+        for(int i=0; i<64; i++){
+            if (states.stateCell(i)==player) sum+=coeff[i];
+        }
+//        System.out.printf("sum pour la situation %s = %d\t",state, sum);
+        return ((double)sum)/500.0;
+    }
+
+
 
     /**
      * Selects the move we wish to play using the "Robust Child" strategy
@@ -226,18 +255,16 @@ public class UCTSoemers extends AI
             final Node child = rootNode.children.get(i);
             final int visitCount = child.visitCount;
 
-            // if we have a new winner
             if (visitCount > bestVisitCount)
             {
                 bestVisitCount = visitCount;
                 bestChild = child;
                 numBestFound = 1;
             }
-            else if //we have an ex-aequo, we decide with random tie-breaking
+            else if
             (
                     visitCount == bestVisitCount &&
                             ThreadLocalRandom.current().nextInt() % ++numBestFound == 0
-                //N.B. the random selection can be simplified
             )
             {
                 // this case implements random tie-breaking
@@ -248,17 +275,12 @@ public class UCTSoemers extends AI
         return bestChild.moveFromParent;
     }
 
-
-
-    /**from the gui, init the id of the AI player
-     * */
     @Override
     public void initAI(final Game game, final int playerID)
     {
         this.player = playerID;
     }
 
-    /**just for the gui, tells that this AI doesn't fit with stochastic games and is for alternating moves*/
     @Override
     public boolean supportsGame(final Game game)
     {
@@ -266,7 +288,7 @@ public class UCTSoemers extends AI
             return false;
 
         if (!game.isAlternatingMoveGame())
-            return true;
+            return false;
 
         return true;
     }

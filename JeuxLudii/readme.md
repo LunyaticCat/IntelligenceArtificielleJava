@@ -43,10 +43,27 @@ Il existe de nombreuses variantes, entre autres :
 
 Vous pouvez les adapter pour créer le vôtre ; le choix de l'algorithme dépend du jeu.
 
---
-Travail à réaliser.
+---
+## Travail à réaliser.
 
-- Développez une IA de type Progressive BIAS, adaptée au jeu Reversi.
+Ce développement est réalisé à l'aide de l'application [Ludii](https://ludii.games/).
+  - Télécharger l'application Ludii : [ludii.games/download.php](https://ludii.games/download.php)
+    - Vous pouvez également télécharger les sources pour joindre la documentation. 
+  - reprenez les codes exitant dans cette page et incluez les dans uin nouveau projet
+  - ajoutez la librairie ludiixxxx.jar que vous avez téléchargée à votre projet.
+
+Parmi les codes de cette page : 
+  - [MonAgentLudique](./MonAgentLudique.java) est une "IA" qui choisit ses actions au hasard
+  - [UCTSoemers](./UCTSoemers.java) est un exemple d'IA utilisant l'algorithme UCT. Code proposé par D.Soemers, auquel des commentaires ont été ajoutés.<br>
+  Il y a plusieurs façons de réaliser un UCT, ceci est une version qui est légèrement différente de celle classiquement présentée.
+  - [TestLudii](./TestLudii.java) est la classe principale, elle lance l'application Ludii en ajoutant les IA ci-dessus.
+
+**Une fois l'application lancée, pour sélectionner une IA** : 
+  - cliquez sur la roue dentée en bas à droite de la fenêtre
+  - pour le joueur de votre choix, choisissez votre IA (par ex. ici EAAI ou UCTSoemers)
+
+**Il y a deux IA à développer :**
+- Développez une _IA de type Progressive BIAS_, adaptée au jeu Reversi.
   - Donc pour la valeur des cases occupées a un impact dans le choix d'un noeud (dans coef d'exploration)
     (appelez là ProgBiasVotreNom)
     - petit guide, en se basant sur UCT Soemers, on remplace le coefficient d'exploration par une valeur basée sur la position des pièces.
@@ -59,10 +76,10 @@ Travail à réaliser.
           - il suffit d'avoir un tableau d'entiers indiquant les valeurs des cases (500 pour les coins (0, 7, 56, 63) par exemple, -150 pour ... etc.)
           - on peut ajouter également le nb de pièces du joueur dans ce calcul
 
-- Développez une IA de type PUP, et appliquée là à un jeu à large choix comme HexAmazons. 
-  - Pour cela il vous faut modifier l'algo UCT 
+- Développez une _IA de type PUP_, et appliquez là à un jeu à large choix comme HexAmazons. 
+  - Pour cela il vous faut modifier fortement l'algo UCT (ou programmer par vous-même un algo MCTS)
     - dans `Node select(final Node current)`
       - on écrit `while (!current.unexpandedMoves.isEmpty())`plutôt que `if`
       - on ne sort pas de cette boucle par return
-      - on efface les noeuds fils non choisis, tant que le noeud père n'a pas été visité n fois (n>=5 par exemple)
+      - on efface les nœuds fils non choisis, tant que le nœud père n'a pas été visité n fois (n>=5 par exemple)
 
