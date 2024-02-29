@@ -57,6 +57,7 @@ Travail à réaliser.
           - `states.stateCell(i)` retourne la valeur du pion (0 = pas de pion, 1 = pions joueur 1, 2 = pions joueur 2 )
           - les cases sont numérotées de 0 à 63. 
           - il suffit d'avoir un tableau d'entiers indiquant les valeurs des cases (500 pour les coins (0, 7, 56, 63) par exemple, -150 pour ... etc.)
+          - on peut ajouter également le nb de pièces du joueur dans ce calcul
 
 - Développez une IA de type PUP, et appliquée là à un jeu à large choix comme HexAmazons. 
   - Pour cela il vous faut modifier l'algo UCT 
