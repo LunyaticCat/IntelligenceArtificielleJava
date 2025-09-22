@@ -75,3 +75,16 @@ A réserver pour des problèmes simples donc :<br>
 ## A faire
 
 Tester le code ci-dessus et vérifier son fonctionnement en faisant varier la déclaration des variables, des contraintes.
+
+---
+## Sudoku
+Un autre exemple très classique : le sudoku..
+
+Sa résolution ne demande que l'appel à la même contrainte : `allDifferent` !
+
+Dans un tableau 9 x 9 : 
+- chaque ligne ne doit comporter qu'une seule occurrence des chiffres de 1 à 9
+- chaque colonne ne doit comporter qu'une seule occurrence des chiffres de 1 à 9
+- chaque zone 3x3, sans recouvrement, ne doit comporter qu'une seule occurrence des chiffres de 1 à 9
+
+Analyser le code, et tentez de créer un code pour le problème tectonic vu en TD.
