@@ -1,6 +1,7 @@
 package algo;
 
-import java.util.ArrayList;
+import java.util.List;
+
 import model.Situation;
 
 /**
@@ -29,10 +30,10 @@ public class Resolution {
         double bound;
         double value;
         if (s.isLeaf() || s.isClose()) {
-            return s.getH();
+            return s.getHeuristicEstimation();
         }
 
-        ArrayList<Situation> successors = s.getSuccessors();
+        List<Situation> successors = s.getSuccessors();
 
 
 
@@ -45,7 +46,7 @@ public class Resolution {
                 else {
                     value = alphaBeta(successor, alpha, bound);
                 }
-                successor.setH(value);
+                successor.setHeuristicEstimation(value);
                 if (value > bound) {
                     bound = value;
                 }

@@ -1,7 +1,9 @@
 package model;
 
 import gui.WindowTTT;
-import java.util.ArrayList;
+
+import java.util.List;
+
 import algo.Resolution;
 
 /**
@@ -53,15 +55,15 @@ public class TicTacToe {
             createSituationTree(s, GAME_DEPTH);
 
             double bestValue = Resolution.alphaBeta(s, -Double.MAX_VALUE, Double.MAX_VALUE);
-            s.setH(bestValue);
+            s.setHeuristicEstimation(bestValue);
 
             boolean found = false;
-            ArrayList<Situation> successors = s.getSuccessors();
+            List<Situation> successors = s.getSuccessors();
             int nbSuccessors = successors.size();
             Situation bestSituation = null;
 
             for (int i = 0; i < nbSuccessors && !found; i++) {
-                found = (successors.get(i).getH() == bestValue);
+                found = (successors.get(i).getHeuristicEstimation() == bestValue);
                 if (found) {
                     bestSituation = successors.get(i);
                 }
@@ -69,7 +71,7 @@ public class TicTacToe {
 
             if (found) {
                 System.out.printf("Found a possible move at (%d, %d), value is %.2f\n",
-                        bestSituation.getLine(), bestSituation.getColumn(), bestSituation.getH());
+                        bestSituation.getLine(), bestSituation.getColumn(), bestSituation.getHeuristicEstimation());
                 result = playMove(PlayerType.MACHINE, bestSituation.getLine(), bestSituation.getColumn());
             } else {
                 System.err.println("Strange, I couldn't find the solution with value " + bestValue);
@@ -104,6 +106,7 @@ public class TicTacToe {
         boolean win = false;
         String message = "";
         boolean full = false;
+        String playerDesc = "Player ";
 
         if (s.isFull()) {
             message += "The entire grid is filled!!!";
@@ -112,17 +115,17 @@ public class TicTacToe {
 
         if (s.threeTokensAligned(player, false)) {
             win = true;
-            message += "Player " + player + " won on a column!\n";
+            message += playerDesc + player + " won on a column!\n";
         }
 
         if (s.threeTokensAligned(player, true)) {
             win = true;
-            message += "Player " + player + " won on a row!\n";
+            message += playerDesc + player + " won on a row!\n";
         }
 
         if (s.threeTokensAlignedDiagonal(player)) {
             win = true;
-            message += "Player " + player + " won on a diagonal!\n";
+            message += playerDesc + player + " won on a diagonal!\n";
         }
 
         if (win || full) {
@@ -136,15 +139,11 @@ public class TicTacToe {
      * Checks if a move is possible on the provided matrix.
      * @param row row number played
      * @param column column number played
-     * @param _gameMatrix game matrix on which to play (different from the actual game matrix)
+     * @param gameMatrix game matrix on which to play (different from the actual game matrix)
      * @return true if the move is allowed
      */
-    public boolean isMovePossible(int row, int column, int[][] _gameMatrix) {
-        boolean result = true;
-        if (_gameMatrix[row][column] != 0) {
-            result = false;
-        }
-        return result;
+    public boolean isMovePossible(int row, int column, int[][] gameMatrix) {
+        return gameMatrix[row][column] == 0;
     }
 
     /**
@@ -199,7 +198,7 @@ public class TicTacToe {
     /**
      * @return the game matrix
      */
-    public int[][] getMatriceJeu() {
+    public int[][] getGameMatrix() {
         return gameMatrix;
     }
 }

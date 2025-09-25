@@ -1,5 +1,6 @@
 package model;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Situation class, representing a node in the state tree
@@ -11,63 +12,61 @@ public class Situation {
     private String name;
     /** number of instances */
     private static int nbInstances = 0;
-    /** instance number */
-    private int noInstances;
     /** row number */
     private int line;
     /** column number */
     private int column;
     /** indicates if the state is in Max mode */
-    private boolean max = true;
+    private boolean isMax = true;
     /** list of states accessible from the current state */
-    private ArrayList<Situation> successors;
+    private List<Situation> successors;
     /** indicates if the state/situation is a leaf of the tree */
-    private boolean leaf;
+    private boolean isLeaf;
     /** indicates if the state/situation is a definitive leaf of the tree
      * (i.e., it is impossible to create successors for this situation) */
     private boolean close;
     /** h = heuristic, estimation of the situation's value */
-    private double h;
+    private double heuristicEstimation;
     /** game grid corresponding to the situation */
     private int[][] gameGrid;
 
     /** default constructor */
     public Situation() {
-        noInstances = nbInstances++;
+        int noInstances = nbInstances++;
         name = "" + noInstances;
-        h = 0;
+        heuristicEstimation = 0;
         gameGrid = new int[3][3];
         successors = new ArrayList<>();
     }
 
     /** constructor initializing the heuristic estimate h
-     * @param _h estimation of the situation */
-    public Situation(int _h) {
+     * @param estimation estimation of the situation */
+    public Situation(int estimation) {
         this();
-        h = _h;
+        heuristicEstimation = estimation;
     }
 
     /** constructor initializing the heuristic estimate h and the node type
-     * @param _h estimation of the situation
-     * @param _estMax determines if the situation's value should be maximized or not */
-    public Situation(int _h, boolean _estMax) {
-        this(_h);
-        max = _estMax;
+     * @param estimation estimation of the situation
+     * @param isMaximized determines if the situation's value should be maximized or not */
+    public Situation(int estimation, boolean isMaximized) {
+        this(estimation);
+        this.isMax = isMaximized;
     }
 
     /** constructor initializing the heuristic estimate h, the node type, and the node position
-     * @param _h estimation of the situation
-     * @param _estMax determines if the situation's value should be maximized or not
-     * @param _estFeuille determines if the situation is final in the tree */
-    public Situation(int _h, boolean _estMax, boolean _estFeuille) {
-        this(_h, _estMax);
-        leaf = _estFeuille;
+     * @param estimation estimation of the situation
+     * @param isMax determines if the situation's value should be maximized or not
+     * @param isLeaf determines if the situation is final in the tree */
+    public Situation(int estimation, boolean isMax, boolean isLeaf) {
+        this(estimation, isMax);
+        this.isLeaf = isLeaf;
     }
 
     /** function evaluating the current situation; calculates 'h' */
     void evaluate() {
         double eval = 0d;
-        double coefSituation = (this.max ? -1 : 1);
+        double coefSituation = (this.isMax ? -1 : 1);
         // positive values are for the AI
         // and are decreased if the next move is for the human
         // otherwise, they are increased
@@ -80,7 +79,7 @@ public class Situation {
         valeur = possibleDangersDiagonal();
         valeur += 0.1 * coefSituation * Math.abs(valeur);
         eval += valeur;
-        h = eval;
+        heuristicEstimation = eval;
     }
 
     /** function that returns the value of a row or column
@@ -91,7 +90,7 @@ public class Situation {
         double result = 0;
         SpecialSituations situation;
         // scanning rows
-        StringBuffer strLineB = new StringBuffer();
+        StringBuilder strLineB = new StringBuilder();
         for (int i = 0; i < TicTacToe.HEIGHT; i++) {
             strLineB.delete(0, strLineB.length());
             for (int j = 0; j < TicTacToe.WIDTH; j++) {
@@ -101,14 +100,14 @@ public class Situation {
             try {
                 situation = SpecialSituations.valueOf(strLineB.toString());
                 result += situation.getValue();
-            } catch (Exception e) {}
+            } catch (Exception _) {}
         }
         return result;
     }
 
     /** builds a danger symbol:
      * appends a character to a string buffer based on the game type */
-    private void buildSymbol(int typeJeu, StringBuffer sb) {
+    private void buildSymbol(int typeJeu, StringBuilder sb) {
         if (typeJeu == PlayerType.PLAYER.getType()) sb.append('O');
         else if (typeJeu == PlayerType.MACHINE.getType()) sb.append('X');
         else if (typeJeu == 0) sb.append('_');
@@ -118,22 +117,26 @@ public class Situation {
     private double possibleDangersDiagonal() {
         double result = 0;
         SpecialSituations situation;
-        StringBuffer strLineB = new StringBuffer();
+        StringBuilder strLineB = new StringBuilder();
         buildSymbol(gameGrid[0][0], strLineB);
         buildSymbol(gameGrid[1][1], strLineB);
         buildSymbol(gameGrid[2][2], strLineB);
+
         try {
             situation = SpecialSituations.valueOf(strLineB.toString());
             result += situation.getValue();
-        } catch (Exception e) {}
+        } catch (Exception _) {}
+
         strLineB.delete(0, strLineB.length());
         buildSymbol(gameGrid[0][2], strLineB);
         buildSymbol(gameGrid[1][1], strLineB);
         buildSymbol(gameGrid[2][0], strLineB);
+
         try {
             situation = SpecialSituations.valueOf(strLineB.toString());
             result += situation.getValue();
-        } catch (Exception e) {}
+        } catch (Exception _) {}
+
         return result;
     }
 
@@ -148,7 +151,7 @@ public class Situation {
             contigue = true;
             for (int j = 0; j < TicTacToe.WIDTH && contigue; j++) {
                 int typeJeu = (ligne ? gameGrid[i][j] : gameGrid[j][i]);
-                contigue = contigue && (typeJeu == valJoueur);
+                contigue = typeJeu == valJoueur;
             }
         }
         return contigue;
@@ -164,7 +167,7 @@ public class Situation {
             contigue = true;
             for (int j = 0; j < TicTacToe.WIDTH && contigue; j++) {
                 int i = (d == 0 ? j : 2 - j);
-                contigue = contigue && (gameGrid[i][j] == valJoueur);
+                contigue = gameGrid[i][j] == valJoueur;
             }
         }
         return contigue;
@@ -188,7 +191,7 @@ public class Situation {
         boolean full = true;
         for (int i = 0; i < TicTacToe.HEIGHT && full; i++)
             for (int j = 0; j < TicTacToe.WIDTH && full; j++)
-                full = full && (this.gameGrid[i][j] != 0);
+                full = this.gameGrid[i][j] != 0;
         return full;
     }
 
@@ -201,13 +204,13 @@ public class Situation {
 
     /** @return true if the state is a leaf */
     public boolean estFeuille() {
-        return leaf || close;
+        return isLeaf || close;
     }
 
     /**
      * @param successors the successors to set
      */
-    public void setSuccessors(ArrayList<Situation> successors) {
+    public void setSuccessors(List<Situation> successors) {
         this.successors = successors;
     }
 
@@ -225,22 +228,22 @@ public class Situation {
     /**
      * @return the successors
      */
-    public ArrayList<Situation> getSuccessors() {
+    public List<Situation> getSuccessors() {
         return successors;
     }
 
     /**
      * @return the heuristic value h
      */
-    public double getH() {
-        return h;
+    public double getHeuristicEstimation() {
+        return heuristicEstimation;
     }
 
     /**
-     * @param h the heuristic value to set
+     * @param heuristicEstimation the heuristic value to set
      */
-    public void setH(double h) {
-        this.h = h;
+    public void setHeuristicEstimation(double heuristicEstimation) {
+        this.heuristicEstimation = heuristicEstimation;
     }
 
     /**
@@ -251,62 +254,62 @@ public class Situation {
     }
 
     /**
-     * @param matriceJeu the game matrix to set
+     * @param gameMatrix the game matrix to set
      */
-    public void setGameGrid(int[][] matriceJeu) {
-        this.gameGrid = matriceJeu;
+    public void setGameGrid(int[][] gameMatrix) {
+        this.gameGrid = gameMatrix;
     }
 
     /**
      * @return true if the state is in Max mode
      */
     public boolean isMax() {
-        return max;
+        return isMax;
     }
 
     /**
      * @param estMax whether the state is in Max mode
      */
     public void setMax(boolean estMax) {
-        this.max = estMax;
+        this.isMax = estMax;
     }
 
     public String toString() {
-        String retour = " S" + name + ", h=" + h + ", is max = " + max + "---";
+        StringBuilder log = new StringBuilder(" S" + name + ", h=" + heuristicEstimation + ", is max = " + isMax + "---");
         if (!successors.isEmpty()) {
-            retour += "\n::::: I have " + successors.size() + " children :::::";
+            log.append("\n::::: I have ").append(successors.size()).append(" children :::::");
             for (Situation s : successors)
-                retour += s.name + "(" + s.h + ") ; ";
+                log.append(s.name).append("(").append(s.heuristicEstimation).append(") ; ");
         }
-        retour += "\n ";
-        return retour;
+        log.append("\n ");
+        return log.toString();
     }
 
     /** displays the matrix associated with the situation on the console */
     public void printMatrix() {
-        String retour = "";
+        StringBuilder log = new StringBuilder();
         for (int i = 0; i < TicTacToe.HEIGHT; i++) {
-            retour += "\n|";
+            log.append("\n|");
             for (int j = 0; j < TicTacToe.WIDTH; j++) {
-                retour += gameGrid[i][j] + "|";
+                log.append(gameGrid[i][j]).append("|");
             }
         }
-        retour += "\n val=" + h + "\n------------\n";
-        System.out.println(retour);
+        log.append("\n val=").append(heuristicEstimation).append("\n------------\n");
+        System.out.println(log);
     }
 
     /**
      * @return true if the state is a leaf
      */
     public boolean isLeaf() {
-        return leaf || close;
+        return isLeaf || close;
     }
 
     /**
      * @param leaf whether the state is a leaf
      */
     public void setLeaf(boolean leaf) {
-        this.leaf = leaf;
+        this.isLeaf = leaf;
     }
 
     /**
