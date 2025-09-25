@@ -26,3 +26,8 @@ Quelques algos en Java issus de l'Intelligence Artificielle
   - P4 est le jeu de 'Puissance4' ou 'Aligne4'. L'IA a été ici optimisée..
 - [JeuxLudii](./JeuxLudii) : utilisation de l'application et de la librairie Ludii pour le développement d'IAs basées sur MCTS. 
 - [jeux](https://github.com/EmmanuelADAM/IntelligenceArtificielleJava/tree/master/jeux) : contient des classes java permettant à 2 joueurs de s'affronter sur le jeu du Carré, et du Surakarta. A vous de définir une IA..
+### Minimax et alphabeta
+- [alphabeta](./alphabeta) : implementation of the minimax algorithm with alpha-beta pruning in Java. The example is based on the game of TicTacToe.
+  - Evaluations of situations are not perfect, so the AI can be beaten. Can you improve it? ((see ``evaluate`` method in ``Situation.java`` and/or values in ``SpecialSituations.java``))
+- [alphabetaConnect4](./alphabetaConnect4) : implementation of the minimax algorithm with alpha-beta pruning in Java. The example is based on the game of Connect4 (Puissance4)
+  - Evaluations of situations are not perfect, so the AI can be beaten. Can you improve it? (see ``dangerValue`` method in ``Situation.java`` (you can also change data in ``DangerPattern.java``))
