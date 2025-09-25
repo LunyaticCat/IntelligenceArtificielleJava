@@ -1,6 +1,7 @@
 package algo;
 
-import java.util.ArrayList;
+import java.util.List;
+
 import model.Situation;
 
 /**
@@ -29,7 +30,7 @@ public final class Resolution {
         }
 
         if (!node.isLeaf()) {
-            final ArrayList<Situation> successors = node.getSuccesseurs();
+            final List<Situation> successors = node.getSuccessors();
             bound = node.isMax() ? alpha : beta;
             int i = 0;
             boolean found = false;
@@ -37,7 +38,7 @@ public final class Resolution {
             while (i < successors.size() && !found) {
                 final Situation successor = successors.get(i);
                 final int value = node.isMax() ? alphaBeta(successor, bound, beta) : alphaBeta(successor, alpha, bound);
-                successor.setH(value);
+                successor.setHeuristic(value);
 
                 if (node.isMax() && value > bound) {
                     bound = value;

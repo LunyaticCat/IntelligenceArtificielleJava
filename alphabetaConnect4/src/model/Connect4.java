@@ -1,7 +1,7 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javax.swing.JOptionPane;
 import algo.Resolution;
 import gui.Connect4Window;
@@ -48,9 +48,9 @@ public class Connect4 extends Thread {
 
         if (selectedValue instanceof String level) {
             switch (level) {
-                case "Easy" -> gameDepth = 3;
-                case "Normal" -> gameDepth = 4;
                 case "Hard" -> gameDepth = 8;
+                case "Normal" -> gameDepth = 4;
+                case "Easy" -> gameDepth = 3;
             }
         }
 
@@ -89,21 +89,21 @@ public class Connect4 extends Thread {
 
             createSituationTree(s, gameDepth);
             int bestValue = Resolution.alphaBeta(s, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            s.setH(bestValue);
+            s.setHeuristic(bestValue);
 
             boolean found = false;
-            ArrayList<Situation> successors = s.getSuccesseurs();
+            List<Situation> successors = s.getSuccessors();
             int nbSuccessors = successors.size();
             StringBuilder sb = new StringBuilder("Machine found ").append(nbSuccessors)
-                    .append(" situations under the previous situation where h=").append(s.getH()).append("\n");
+                    .append(" situations under the previous situation where h=").append(s.getHeuristic()).append("\n");
 
             int i = 0;
             Situation bestSituation = null;
             for (; i < nbSuccessors && !found; i++) {
-                found = (successors.get(i).getH() == bestValue);
+                found = (successors.get(i).getHeuristic() == bestValue);
                 if (found)  bestSituation = successors.get(i);
                 sb.append("col").append(successors.get(i).getColumnNumber()).append("=")
-                        .append(successors.get(i).getH()).append(", ");
+                        .append(successors.get(i).getHeuristic()).append(", ");
             }
 
             for (; i < nbSuccessors; i++) {
@@ -155,9 +155,10 @@ public class Connect4 extends Thread {
         boolean win = false;
         String message = "";
         boolean full = true;
+        String playerMessage = "Player ";
 
         for (int j = 0; j < Connect4.WIDTH && full; j++) {
-            full = full && (gameMatrix[Connect4.HEIGHT][j] == 6);
+            full = gameMatrix[Connect4.HEIGHT][j] == 6;
         }
 
         if (full) {
@@ -166,17 +167,17 @@ public class Connect4 extends Thread {
 
         if (s.fourAlignedInColumn(player) != 0) {
             win = true;
-            message += "Player " + player + " won on a column!\n";
+            message += playerMessage + player + " won on a column!\n";
         }
 
         if (s.fourAlignedInRow(player) != 0) {
             win = true;
-            message += "Player " + player + " won on a row!\n";
+            message += playerMessage + player + " won on a row!\n";
         }
 
         if (s.fourAlignedInDiagonal(player) != 0) {
             win = true;
-            message += "Player " + player + " won on a diagonal!\n";
+            message += playerMessage + player + " won on a diagonal!\n";
         }
 
         if (win || full) {

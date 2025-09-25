@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Situation class, it represents a node in the state tree.
@@ -15,9 +16,6 @@ public class Situation {
     /** Number of instances */
     private static int instanceCount = 0;
 
-    /** Instance number */
-    private int instanceNumber;
-
     /** Column number */
     private int columnNumber;
 
@@ -25,7 +23,7 @@ public class Situation {
     private boolean max = true;
 
     /** List of states accessible from the current state */
-    private ArrayList<Situation> successors;
+    private List<Situation> successors;
 
     /** Indicates if the state/situation is a leaf of the tree */
     private boolean leaf;
@@ -44,7 +42,7 @@ public class Situation {
 
     /** Default constructor */
     public Situation() {
-        instanceNumber = instanceCount++;
+        int instanceNumber = instanceCount++;
         name = "" + instanceNumber;
         h = 0;
         gameMatrix = new int[Connect4.HEIGHT + 1][Connect4.WIDTH + 1];
@@ -54,34 +52,34 @@ public class Situation {
     /**
      * Constructor initializing the heuristic estimate h
      *
-     * @param _h estimation of the situation
+     * @param estimation estimation of the situation
      */
-    public Situation(int _h) {
+    public Situation(int estimation) {
         this();
-        h = _h;
+        h = estimation;
     }
 
     /**
      * Constructor initializing the heuristic estimate h and the node type
      *
-     * @param _h estimation of the situation
-     * @param _isMax determines if the value of the situation should be maximized or not
+     * @param estimation estimation of the situation
+     * @param isMax determines if the value of the situation should be maximized or not
      */
-    public Situation(int _h, boolean _isMax) {
-        this(_h);
-        max = _isMax;
+    public Situation(int estimation, boolean isMax) {
+        this(estimation);
+        max = isMax;
     }
 
     /**
      * Constructor initializing the heuristic estimate h, the node type, and the node position
      *
-     * @param _h estimation of the situation
-     * @param _isMax determines if the value of the situation should be maximized or not
-     * @param _isLeaf determines if the situation is final in the tree
+     * @param estimation estimation of the situation
+     * @param isMax determines if the value of the situation should be maximized or not
+     * @param isLeaf determines if the situation is final in the tree
      */
-    public Situation(int _h, boolean _isMax, boolean _isLeaf) {
-        this(_h, _isMax);
-        leaf = _isLeaf;
+    public Situation(int estimation, boolean isMax, boolean isLeaf) {
+        this(estimation, isMax);
+        leaf = isLeaf;
     }
 
     /** Function evaluating the current situation; calculates 'h' */
@@ -130,42 +128,30 @@ public class Situation {
     /** Compute the index of danger in lines and parts of diagonals */
     private int dangerValue(int[] lineDiagonal, int playerValue) {
         int result = 0;
-        int danger1, danger2, danger3, danger4;
-        int possibleDanger1, possibleDanger2, possibleDanger3, possibleDanger4;
+        List<Integer> dangers = new ArrayList<>();
+        List<Integer> possibleDangers = new ArrayList<>();
 
-        if (playerValue == 1) {
-            danger1 = Situation.findSubArray(lineDiagonal, DangerPattern.DANGER1_1.getPattern());
-            danger2 = Situation.findSubArray(lineDiagonal, DangerPattern.DANGER1_2.getPattern());
-            danger3 = Situation.findSubArray(lineDiagonal, DangerPattern.DANGER1_3.getPattern());
-            danger4 = Situation.findSubArray(lineDiagonal, DangerPattern.DANGER1_4.getPattern());
-        } else {
-            danger1 = Situation.findSubArray(lineDiagonal, DangerPattern.DANGER2_1.getPattern());
-            danger2 = Situation.findSubArray(lineDiagonal, DangerPattern.DANGER2_2.getPattern());
-            danger3 = Situation.findSubArray(lineDiagonal, DangerPattern.DANGER2_3.getPattern());
-            danger4 = Situation.findSubArray(lineDiagonal, DangerPattern.DANGER2_4.getPattern());
+        for (DangerPattern dangerPattern : DangerPattern.getDangersByPlayer(playerValue, false)) {
+            dangers.add(Situation.findSubArray(lineDiagonal, dangerPattern.getPattern()));
         }
 
-        if (danger1 != -1) result = 1000;
-        if (danger2 != -1) result = 1000;
-        if (danger3 != -1) result = 1000;
-        if (danger4 != -1) result = 1000;
-
-        if (playerValue == 1) {
-            possibleDanger1 = Situation.findSubArray(lineDiagonal, DangerPattern.POSSIBLE_DANGER1_1.getPattern());
-            possibleDanger2 = Situation.findSubArray(lineDiagonal, DangerPattern.POSSIBLE_DANGER1_2.getPattern());
-            possibleDanger3 = Situation.findSubArray(lineDiagonal, DangerPattern.POSSIBLE_DANGER1_3.getPattern());
-            possibleDanger4 = Situation.findSubArray(lineDiagonal, DangerPattern.POSSIBLE_DANGER1_4.getPattern());
-        } else {
-            possibleDanger1 = Situation.findSubArray(lineDiagonal, DangerPattern.POSSIBLE_DANGER2_1.getPattern());
-            possibleDanger2 = Situation.findSubArray(lineDiagonal, DangerPattern.POSSIBLE_DANGER2_2.getPattern());
-            possibleDanger3 = Situation.findSubArray(lineDiagonal, DangerPattern.POSSIBLE_DANGER2_3.getPattern());
-            possibleDanger4 = Situation.findSubArray(lineDiagonal, DangerPattern.POSSIBLE_DANGER2_4.getPattern());
+        for (Integer danger : dangers) {
+            if (danger == -1) {
+                result = 1000;
+                break;
+            }
         }
 
-        if (possibleDanger1 != -1) result += 50;
-        if (possibleDanger2 != -1) result += 50;
-        if (possibleDanger3 != -1) result += 50;
-        if (possibleDanger4 != -1) result += 50;
+        for (DangerPattern dangerPattern : DangerPattern.getDangersByPlayer(playerValue, true)) {
+            possibleDangers.add(Situation.findSubArray(lineDiagonal, dangerPattern.getPattern()));
+        }
+
+        for (Integer possibleDanger : possibleDangers) {
+            if (possibleDanger == -1) {
+                result += 50;
+                break;
+            }
+        }
 
         return result;
     }
@@ -385,7 +371,7 @@ public class Situation {
     /**
      * @param successors the successors to set
      */
-    public void setSuccessors(ArrayList<Situation> successors) {
+    public void setSuccessors(List<Situation> successors) {
         this.successors = successors;
     }
 
@@ -404,21 +390,14 @@ public class Situation {
     /**
      * @return the successors
      */
-    public ArrayList<Situation> getSuccesseurs() {
+    public List<Situation> getSuccessors() {
         return successors;
-    }
-
-    /**
-     * @return the heuristic value h
-     */
-    public int getH() {
-        return h;
     }
 
     /**
      * @param h the heuristic value to set
      */
-    public void setH(int h) {
+    public void setHeuristic(int h) {
         this.h = h;
     }
 
@@ -484,7 +463,7 @@ public class Situation {
      * @param subArray small array to find in largeArray
      * @return the position of the first element of subArray in largeArray, -1 if it doesn't exist
      */
-    static public int findSubArray(int[] largeArray, int[] subArray) {
+    public static int findSubArray(int[] largeArray, int[] subArray) {
         int subArrayLength = subArray.length;
         if (subArrayLength == 0) {
             return -1;
